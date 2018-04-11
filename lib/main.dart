@@ -4,13 +4,13 @@ import 'package:english_words/english_words.dart';
 void main() => runApp(new MyApp());
 
 class MyApp extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return new MaterialApp(
-        title: 'Startup Name Generator',
-        home: new RandomWords(),
+      title: 'Startup Name Generator',
+      theme: new ThemeData(primaryColor: Colors.white),
+      home: new RandomWords(),
     );
   }
 }
@@ -34,6 +34,9 @@ class RandomWordsState extends State<RandomWords> {
     return new Scaffold(
       appBar: new AppBar(
         title: new Text('分类数据'),
+        actions: <Widget>[
+          new IconButton(icon: new Icon(Icons.list), onPressed: _pushSaved)
+        ],
       ),
       body: _buildSuggestions(),
     );
@@ -67,17 +70,39 @@ class RandomWordsState extends State<RandomWords> {
       trailing: new Icon(
         alreadySaved ? Icons.favorite : Icons.favorite_border,
         color: alreadySaved ? Colors.red : null,
-
       ),
-      onTap:(){
+      onTap: () {
         setState(() {
-          if(alreadySaved){
+          if (alreadySaved) {
             _saved.remove(pari);
-          }else{
+          } else {
             _saved.add(pari);
           }
         });
       },
     );
+  }
+
+  void _pushSaved() {
+    Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
+      final tiles = _saved.map((pari) {
+        return new ListTile(
+          title: new Text(
+            pari.asPascalCase,
+            style: _biggerFont,
+          ),
+        );
+      });
+
+      final divided = ListTile.divideTiles(context: context, tiles: tiles).toList();
+
+      return new Scaffold(
+          appBar: new AppBar(
+            title: new Text('Saved Suggestion'),
+          ),
+          body: new ListView(children: divided),
+      );
+
+    }));
   }
 }
